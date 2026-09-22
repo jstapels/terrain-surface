@@ -1,0 +1,15 @@
+{
+  "id": "terrain-surface",
+  "title": "Terrain Surface",
+  "description": "Turn Define Surface regions into solid terrain that blocks lower tokens' sight of the battlemap. See across the terrain when your viewpoint reaches its surface.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "14.368",
+    "verified": "14.368",
+    "maximum": "14"
+  },
+  "authors": [{ "name": "jstapels" }],
+  "esmodules": ["scripts/main.js"],
+  "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }],
+  "license": "LICENSE"
+}

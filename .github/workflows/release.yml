@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - name: Resolve version and detect reruns
+        id: release
+        run: node tools/resolve-release.mjs
+      - name: Build release assets
+        if: steps.release.outputs.published != 'true'
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: npm run build
+      - name: Stage complete release as a draft
+        if: steps.release.outputs.published != 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_EXISTS: ${{ steps.release.outputs.existing }}
+        run: |
+          if [ "$RELEASE_EXISTS" = "true" ]; then
+            gh release upload "$RELEASE_TAG" dist/module.json dist/terrain-surface.zip dist/SHA256SUMS --clobber
+          else
+            gh release create "$RELEASE_TAG" dist/module.json dist/terrain-surface.zip dist/SHA256SUMS \
+              --draft --target "$GITHUB_SHA" --title "$RELEASE_TAG" --generate-notes
+          fi
+      - name: Publish installable release
+        if: steps.release.outputs.published != 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          MAKE_LATEST: ${{ steps.release.outputs.latest }}
+        run: gh release edit "$RELEASE_TAG" --draft=false --latest="$MAKE_LATEST"

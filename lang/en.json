@@ -1,0 +1,11 @@
+{
+  "TERRAIN_SURFACE": {
+    "Behavior": {
+      "Name": "Terrain Surface",
+      "Hint": "Extrude this region's sight-restricting Define Surface downward as solid terrain. Add a Define Surface behavior to this same region and give its selected bottom or top a finite elevation. Lower viewpoints cannot see through its footprint; viewpoints at or above the surface can see across it. This affects sight only. Set token elevation when climbing onto the terrain."
+    },
+    "Errors": {
+      "Backend": "Terrain Surface could not activate because another module replaced Foundry's sight polygon backend. Disable the conflicting vision module and reload."
+    }
+  }
+}
