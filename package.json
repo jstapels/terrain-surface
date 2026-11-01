@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "acorn": "8.18.0",
+    "acorn": "8.19.0",
     "clipper-lib": "6.4.2",
     "eslint": "10.11.0",
     "globals": "17.12.0",
